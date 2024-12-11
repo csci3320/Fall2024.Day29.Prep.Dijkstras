@@ -1,0 +1,9 @@
+graph{
+  atl--oma [label=200]
+  atl--sfo [label=100]
+  atl--lax [label=60]
+  atl--kc  [label=75]
+  oma--kc [label=100]
+  lax--kc [label=100]
+  sfo--lax [label=50]
+}

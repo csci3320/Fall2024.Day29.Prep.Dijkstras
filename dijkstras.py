@@ -1,70 +1,73 @@
-airports = set(["ATL", "OMA", "SFO", "LAX", "KC"])
-
-flights = set([
-  ("ATL", "OMA", 100),
+edges = set([
+  ("ATL", "OMA", 200),
   ("ATL", "SFO", 100),
-  ("ATL", "LAX", 100),
-  ("ATL", "KC", 100),
+  ("ATL", "LAX", 60),
+  ("ATL", "KC", 75),
   ("OMA", "KC", 100),
   ("LAX", "KC", 100),
   ("SFO", "LAX", 50)
 ])
 
-def find_connecting_flights(parent):
-  connections = set()
-  for flight in flights:
-    if flight[0] == parent:
-      connections.add((flight[1], flight[2]))
-    if flight[1] == parent:
-      connections.add((flight[0], flight[2]))
-  return connections
-
-visited = set()
-
-inf = 10000
-
-cheapest = {"ATL":inf, "OMA": inf, "SFO": inf, "LAX": inf, "KC": inf}
-best_previous = {"ATL":None, "OMA": None, "SFO": None, "LAX": None, "KC": None}
-
-
-current = "OMA"
+start = "OMA"
 destination = "SFO"
 
-cheapest[current] = 0
+def get_connections(node):
+  connections = set()
+  for edge in edges:
+    if edge[0] == node:
+      connections.add((edge[1], edge[2]))
+    if edge[1] == node:
+      connections.add((edge[0], edge[2]))
+  return connections
 
-print(cheapest)
+inf = 1_000_000
+
+nodes = set()
+for edge in edges:
+  nodes.add(edge[0])
+  nodes.add(edge[1])
+
+visited = {node:False for node in nodes}
+cheapest = {node:inf for node in nodes}
+best_previous = {node:None for node in nodes}
+
+current = start
+cheapest[current] = 0
 
 done = False
 while not done:
-  connections = find_connecting_flights(current)
-  print(connections)
+  connections = get_connections(current)
+  
   for connection in connections:
     new_cost = connection[1] + cheapest[current]
     best_cost = cheapest[connection[0]]
-    # cheapest[connection[0]] = min(cheapest[connection[0]], new_cost)
     if new_cost < best_cost:
       cheapest[connection[0]] = new_cost
       best_previous[connection[0]] = current
-  visited.add(current)
+  
+  visited[current] = True
   if current == destination:
     done = True
 
   next_best, next_best_cost = None, inf
-  for airport in airports:
-    if airport not in visited:
-      if cheapest[airport] < next_best_cost:
-        next_best = airport
-        next_best_cost = cheapest[airport]
+  for node in nodes:
+    if not visited[node]:
+      if cheapest[node] < next_best_cost:
+        next_best = node
+        next_best_cost = cheapest[node]
   if next_best is None:
-    print("I couldn't find a better airport")
     done = True
   else:
     current = next_best
 
 print(cheapest)
-print(best_previous)
 
-# Do a back trace to the original airport
-path = []
-previous = best_previous[destination]
-# while previous != start
+# Do a back track to the original airport
+path = [destination]
+current = best_previous[destination]
+while current != start:
+  path.append(current)
+  current = best_previous[current]
+path.append(start)
+path.reverse()
+print(path)

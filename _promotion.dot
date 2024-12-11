@@ -1,0 +1,9 @@
+graph{
+  undergraduate--level1 [label=0]
+  level1--level2 [label=3]
+  undergraduate--ms [label=2]
+  ms--level2 [label=0]
+  level2--level3 [label=5]
+  ms--phd [label=4]
+  phd--level3 [label=0]
+}
